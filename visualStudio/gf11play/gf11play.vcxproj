@@ -11,17 +11,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\gfprime11play.cpp" />
+    <ClCompile Include="..\..\src\gf11play.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="EccCommon.vcxproj">
+    <ProjectReference Include="..\EccCommon\EccCommon.vcxproj">
       <Project>{29be5277-164e-4e6f-9fd4-15e0283de848}</Project>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D706B178-ECDD-46C0-8879-9F46BA0B9A91}</ProjectGuid>
+    <ProjectGuid>{8C1014B9-F721-4151-A81C-E31574538190}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>gfprime11play</RootNamespace>
+    <RootNamespace>gf11play</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

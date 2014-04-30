@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\gf11play.cpp">
+    <ClCompile Include="..\..\src\rs11sample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

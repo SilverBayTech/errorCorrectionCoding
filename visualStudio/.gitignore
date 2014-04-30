@@ -2,5 +2,6 @@
 *.opensdf
 *.user
 *.sdf
-/Debug
-/Release
+*.log
+Debug
+Release

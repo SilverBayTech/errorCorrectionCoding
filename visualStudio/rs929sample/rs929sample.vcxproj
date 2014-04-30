@@ -10,18 +10,10 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\gf11play.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="EccCommon.vcxproj">
-      <Project>{29be5277-164e-4e6f-9fd4-15e0283de848}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{8C1014B9-F721-4151-A81C-E31574538190}</ProjectGuid>
+    <ProjectGuid>{EF539722-0B56-4955-9EA5-202E6729B19A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>gf11play</RootNamespace>
+    <RootNamespace>rs929sample</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -85,6 +77,14 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EccCommon\EccCommon.vcxproj">
+      <Project>{29be5277-164e-4e6f-9fd4-15e0283de848}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\rs929sample.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -14,30 +14,38 @@
  *  limitations under the License.
  */
 
-#ifndef GRPRIME_DOT_H
-#define GRPRIME_DOT_H
+#ifndef GRBINARY_DOT_H
+#define GRBINARY_DOT_H
 #include <stdint.h>
 #include <iostream>
 
 namespace SilverBayTech
 {
     /*
-     *  A template class that implements a Galois Field with a prime number
-     *  of elements using standard modulo arithmetic, plus tables for log
+     *  A template class that implements a Galois Field with a binary number
+     *  of elements using standard XOR arithmetic, plus tables for log
      *  and exp operations.  Those tables must be provided externally - 
      *  the template can't generate them, however the program 
-     *  primeLogExpGenerator can produce the required values.
+     *  binaryLogExpGenerator can produce the required values.
      */
 
     template<unsigned int SIZE>
-    class GFPrime
+    class GFBinary
     {
     public:
+        /*
+         *  Constructor that builds a "zero" element.
+         */
+        GFBinary() 
+            : _value(0)
+        {
+        }
+
         /*
          *  Constructor that builds an element of arbitrary value.
          *  The value passed in will be reduced modulo SIZE.
          */
-        GFPrime(uint32_t value = 0) 
+        GFBinary(uint32_t value) 
             : _value(value % SIZE)
         { 
         }
@@ -45,7 +53,7 @@ namespace SilverBayTech
         /*
          *  Copy constructor
          */
-        GFPrime(const GFPrime<SIZE>& other) 
+        GFBinary(const GFBinary<SIZE>& other) 
             : _value(other._value)
         {
         }
@@ -53,7 +61,7 @@ namespace SilverBayTech
         /*
          *  Assignment operator.
          */
-        GFPrime<SIZE>& operator=(const GFPrime<SIZE>& other) 
+        GFBinary<SIZE>& operator=(const GFBinary<SIZE>& other) 
         { 
             if (&other != this) 
             { 
@@ -65,28 +73,28 @@ namespace SilverBayTech
         /*
          *  "Addition-like" operations.
          */
-        GFPrime<SIZE> operator+(const GFPrime<SIZE>& other) const
+        GFBinary<SIZE> operator+(const GFBinary<SIZE>& other) const
         { 
-            return GFPrime<SIZE>(_value + other._value); 
+            return GFBinary<SIZE>(_value ^ other._value); 
         }
 
-        GFPrime<SIZE>& operator+=(const GFPrime<SIZE>& other)
+        GFBinary<SIZE>& operator+=(const GFBinary<SIZE>& other)
         {
-            _value = (_value + other._value) % SIZE;
+            _value ^= other._value;
             return *this;
         }
 
         /*
          *  "Subtraction-like" operations.
          */
-        GFPrime<SIZE> operator-(const GFPrime<SIZE>& other) const
+        GFBinary<SIZE> operator-(const GFBinary<SIZE>& other) const
         { 
-            return GFPrime<SIZE>(SIZE + _value - other._value); 
+            return GFBinary<SIZE>(_value ^ other._value); 
         }
 
-        GFPrime<SIZE>& operator-=(const GFPrime<SIZE>& other)
+        GFBinary<SIZE>& operator-=(const GFBinary<SIZE>& other)
         {
-            _value = (SIZE + _value - other._value) % SIZE;
+            _value ^= other._value;
             return *this;
         }
 
@@ -94,14 +102,28 @@ namespace SilverBayTech
          *  "Multiplication-like" operations.
          */
 
-        GFPrime<SIZE> operator*(const GFPrime<SIZE>& other)  const
-        { 
-            return GFPrime<SIZE>(_value * other._value); 
+        GFBinary<SIZE> operator*(const GFBinary<SIZE>& other)  const
+        {
+            if (_value == 0 || other._value == 0)
+            {
+                return GFBinary<SIZE>(0);
+            }
+
+            return GFBinary<SIZE>::exp(this->log() + other.log());
         }
 
-        GFPrime<SIZE>& operator*=(const GFPrime<SIZE>& other)
+        GFBinary<SIZE>& operator*=(const GFBinary<SIZE>& other)
         {
-            _value = (_value * other._value) % SIZE;
+            if (_value == 0 || other._value == 0)
+            {
+                _value = 0;
+            }
+            else
+            {
+                uint32_t logOfResult = this->log() + other.log();
+                _value = GFBinary<SIZE>::EXP_TABLE[logOfResult % (SIZE - 1)];
+            }
+
             return *this;
         }
 
@@ -109,23 +131,23 @@ namespace SilverBayTech
          *  "Division-like" operations.
          */
 
-        GFPrime<SIZE> operator/(const GFPrime<SIZE>& other)  const
+        GFBinary<SIZE> operator/(const GFBinary<SIZE>& other)  const
         { 
             if (_value == 0)
             {
-                return GFPrime<SIZE>(0);
+                return GFBinary<SIZE>(0);
             }
 
             uint32_t logOfResult = SIZE - 1 + this->log() - other.log();
-            return GFPrime<SIZE>::exp(logOfResult);
+            return GFBinary<SIZE>::exp(logOfResult);
         }
 
-        GFPrime<SIZE>& operator/=(const GFPrime<SIZE>& other)
+        GFBinary<SIZE>& operator/=(const GFBinary<SIZE>& other)
         {
             if (_value != 0)
             {
                 uint32_t logOfResult = SIZE - 1 + this->log() - other.log();
-                _value = GFPrime<SIZE>::EXP_TABLE[logOfResult % (SIZE - 1)];
+                _value = GFBinary<SIZE>::EXP_TABLE[logOfResult % (SIZE - 1)];
             }
 
             return *this;
@@ -134,19 +156,19 @@ namespace SilverBayTech
         /*
          *  Unary negation - returns the additive inverse.
          */
-        GFPrime<SIZE> operator-() const
+        GFBinary<SIZE> operator-() const
         { 
-            return GFPrime<SIZE>(SIZE - _value); 
+            return GFBinary<SIZE>(_value); 
         }
 
         /*
          *  Comparison operations.
          */
-        bool operator==(const GFPrime<SIZE>& other) const
+        bool operator==(const GFBinary<SIZE>& other) const
         { 
             return _value == other._value; 
         }
-        bool operator!=(const GFPrime<SIZE>& other) const
+        bool operator!=(const GFBinary<SIZE>& other) const
         { 
             return _value != other._value; 
         }
@@ -164,9 +186,9 @@ namespace SilverBayTech
          *  antilog function.  It depends on the EXP_TABLE[] array,
          *  which has to be declared by the user.
          */
-        static GFPrime<SIZE> exp(uint32_t power)
+        static GFBinary<SIZE> exp(uint32_t power)
         {
-            return GFPrime<SIZE>(EXP_TABLE[power % (SIZE - 1)]);
+            return GFBinary<SIZE>(EXP_TABLE[power % (SIZE - 1)]);
         }
 
         /*
@@ -182,14 +204,14 @@ namespace SilverBayTech
         /*
          *  Computes this element to the nth power.
          */
-        GFPrime<SIZE> pow(uint32_t power) const
+        GFBinary<SIZE> pow(uint32_t power) const
         {
             if (_value == 0)
             {
-                return GFPrime<SIZE>(0);
+                return GFBinary<SIZE>(0);
             }
 
-            return GFPrime<SIZE>::exp(log() * power);
+            return GFBinary<SIZE>::exp(log() * power);
         }
 
         static const uint32_t FIELD_SIZE = SIZE;
@@ -214,11 +236,13 @@ namespace SilverBayTech
     };
 
     template<unsigned int SIZE>
-    std::ostream& operator<< (std::ostream& stream, const GFPrime<SIZE>& item)
+    std::ostream& operator<< (std::ostream& stream, const GFBinary<SIZE>& item)
     {
-        stream << item.toInt();
+        ios::fmtflags previousFlags(stream.flags());
+        stream << uppercase << hex << item.toInt();
+        stream.flags(previousFlags);
         return stream;
     }
 }
 
-#endif  // GRPRIME_DOT_H
+#endif  // GRBINARY_DOT_H

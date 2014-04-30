@@ -31,21 +31,6 @@ using namespace std;
 using SilverBayTech::GFPrime;
 
 /*
- *  These two entries provide the EXP and LOG values for GFPrime<11>.  If you were starting
- *  to use GFPrime for some value other than 11 and needed to get going from scratch,
- *  you could declare these with empty values and run the equivalent buildExpLogTable()
- *  for your prime, which will generate them for you.  (buildExpLogTable() doesn't depend
- *  on the existence of the tables - it does everything via multiplication.) Note that
- *  we include a log value (0) for zero, even though it's technically undefined.  But you
- *  should never be taking the log of zero, so it shouldn't matter to you.  The EXP table
- *  is one shorter, because we assume that all exponents are "modded" before being run
- *  through this table.
- */
-
-const uint32_t GFPrime<11>::EXP_TABLE[10] = {1,2,4,8,5,10,9,7,3,6};
-const uint32_t GFPrime<11>::LOG_TABLE[11] = {0,0,1,8,2,4,9,7,3,6,5};
-
-/*
  *  This method tests to see if the candidate is a primitive element for
  *  the Galois Field.  It does this by successively multiplying through
  *  by this element (i.e. computing successive powers of it) and verifying that
